@@ -1,0 +1,17 @@
+
+Crear dos servicios con docker swarm (servicio-apache) (servicio-nodejs) que uno escuche en el puerto 8080 y el otro en puerto 8090, los dos servicios tendran cada uno 3 contenedores.
+
+- Crear el sitio que al ingresar mostrara el listado de alumnos y también deberá poder dar de alta los alumnos... cargando los datos necesarios Apellido, Nombre, Dni. es decir hacer el CRUD solo consulta he inserción.
+
+- El primero (apache) tendrá la aplicación (programada en el lenguaje que elijan) que consulte y guarden datos en una base de datos que se llama mysql1
+- El otro servicio (nodejs)  también tendrá una aplicación (programada en javascript) que consultara y guardara en la misma base de datos  mysql1
+
+  --volúmenes
+- Al crear el mysql1 debe tener un volumen en /home/usuario/mysql-datos/
+- El primer servicio tendrá un volumen a /home/usuario/apache-datos/
+- El segundo servicio tendrá un volumen a /home/usuario/node-datos/
+
+  bd: prueba
+  table: alumnos   -- en base al trabajo del Fecha de entrega: 7 ago
+
+Crear los yml necesarios para el despliegue, la carpeta con las aplicaciones y los dockerfiles de las imagenes
