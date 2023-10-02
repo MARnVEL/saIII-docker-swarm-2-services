@@ -3,7 +3,7 @@ const express = require("express");
 const app = express();
 const port = 81;
 
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send("<h1>Server 1</h1>");
 });
 
