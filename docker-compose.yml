@@ -2,9 +2,9 @@ version: '3'
 
 services:
   apache:
-    build:
-      context: ./node-in-apache
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./node-in-apache
+    #   dockerfile: Dockerfile
     image: nia-img
     ports:
       - "8080:81"
@@ -14,13 +14,14 @@ services:
       - swarm-net
     # depends_on:
     #   - mysql
-    volumes:
-      - ./apache-datos:/var/www/html
+    # Este fucking volume me está causando problemas.. Por eso lo comenté chaon
+    # volumes:
+    #   - ./apache-datos:/var/www/html
 
   nodejs:
-    build:
-      context: ./nodejs
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./nodejs
+    #   dockerfile: Dockerfile
     image: node-img
     ports:
       - "8090:3000"
