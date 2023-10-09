@@ -1,0 +1,55 @@
+version: '3'
+
+services:
+  apache:
+    build:
+      context: ./node-in-apache
+      dockerfile: Dockerfile
+    image: nia-img
+    ports:
+      - "8080:81"
+    deploy:
+      replicas: 3
+    networks:
+      - swarm-net
+    # depends_on:
+    #   - mysql
+    volumes:
+      - ./apache-datos:/var/www/html
+
+  nodejs:
+    build:
+      context: ./nodejs
+      dockerfile: Dockerfile
+    image: node-img
+    ports:
+      - "8090:3000"
+    deploy:
+      replicas: 3
+    networks:
+      - swarm-net
+    # depends_on:
+    #   - mysql
+    volumes:
+      - ./node-datos:/usr/src/app
+
+networks:
+  swarm-net:
+  
+  # mysql:
+  #   # build:
+  #   #   context: ./database
+  #   #   dockerfile: Dockerfile
+  #   image: mysql-img
+  #   environment:
+  #     - MYSQL_ROOT_PASSWORD=pass
+  #     - MYSQL_DATABASE=prueba
+  #     - MYSQL_PASSWORD=pass
+  #   ports:
+  #     - "3312:3312"
+  #   # Creo un volumen para no perder el los datos de la BD al eliminar el contenedor.
+  #   volumes:
+  #     - ./mysql-datos:/var/lib/mysql
+  #   deploy:
+  #     replicas: 1
+

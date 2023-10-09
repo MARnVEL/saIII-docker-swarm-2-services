@@ -8,9 +8,6 @@ WORKDIR /var/www/html
 # Copiamos el contenido del directorio local a /var/www/html en el contenedor
 COPY ./ /var/www/html/
 
-# Exponemos el puerto 81. Este puerto debe ser el mismo que se utiliza para crear el servidor y, al crear el contenedor, cuando hacemos el mapeo de puertos, el puerto del contenedor debe ser igual al puerto expuesto aquí.
-EXPOSE 81
-
 # Instalamos NodeJS (ver pasos en: https://github.com/nodesource/distributions/blob/master/README.md#debian-versions)
 RUN apt-get update
 RUN apt-get install -y ca-certificates curl gnupg
@@ -25,5 +22,8 @@ RUN apt-get update && \
 
 # Una vez instalado node, ya podemos hacer la instalación de dependencias para ejecutar nuestro servidor.
 RUN npm install
+
+# Exponemos el puerto 81. Este puerto debe ser el mismo que se utiliza para crear el servidor y, al crear el contenedor, cuando hacemos el mapeo de puertos, el puerto del contenedor debe ser igual al puerto expuesto aquí.
+EXPOSE 81
 
 CMD ["npm" "run" "dev"]

@@ -1,11 +1,14 @@
 const express = require("express");
 const mysql = require("mysql2");
 
+const app = express();
+const port = 3000;
+
 app.use(express.urlencoded({ extended: true }));
 
 // Config conexión a base de datos
 const db = mysql.createConnection({
-  host: "localhost",
+  host: "172.17.0.2",
   user: "root",
   password: "pass",
   database: "prueba",
