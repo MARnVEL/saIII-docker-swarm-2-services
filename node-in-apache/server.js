@@ -4,9 +4,11 @@ const mysql = require("mysql2");
 const app = express();
 const port = 81;
 
+app.use(express.urlencoded({ extended: true }));
+
 // Config conexión a base de datos
 const db = mysql.createConnection({
-  host: "172.17.0.2",
+  host: "localhost",
   user: "root",
   password: "pass",
   database: "prueba",
@@ -84,10 +86,6 @@ app.post("/agregar", (req, res) => {
   });
 });
 
-/* app.get("/", (req, res) => {
-  res.send("<h1>Server 1</h1>");
-});
- */
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(

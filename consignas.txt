@@ -14,4 +14,4 @@ Crear dos servicios con docker swarm (servicio-apache) (servicio-nodejs) que uno
   bd: prueba
   table: alumnos   -- en base al trabajo del Fecha de entrega: 7 ago
 
-Crear los yml necesarios para el despliegue, la carpeta con las aplicaciones y los dockerfiles de las imagenes
+Crear los yml necesarios para el despliegue, la carpeta con las aplicaciones y los dockerfiles de las imagenes.
