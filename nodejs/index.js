@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Config conexión a base de datos
 const db = mysql.createConnection({
-  host: "172.17.0.2",
+  host: "mysql",
   user: "root",
   password: "pass",
   database: "prueba",

@@ -9,4 +9,4 @@ COPY ./ /docker-entrypoint-initdb.d
 
 # RUN --init-file /docker-entrypoint-initdb.d/init.sql
 
-EXPOSE 3312
+EXPOSE 3306
