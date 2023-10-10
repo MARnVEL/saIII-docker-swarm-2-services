@@ -1,7 +1,8 @@
 
-# Docker Swarm (servers + balancer)
+# Docker Swarm (servers + DB)
 >
-> This repo was created to address some practical questions about Docker Compose posed by the class 'Upgrade Seminar III' of the **Formosa Polytechnic Institute** .
+> This repo was created to address some practical questions about Docker Swarm posed by the class 'Upgrade Seminar III' of the **Formosa Polytechnic Institute** .
+> 
 > *Este repositorio fue creado para abordar algunas preguntas prácticas sobre Docker Compose planteadas por la clase 'Seminario de Actualización III' del **Instituto Politécnico Formosa***.
 
 ## Tecnologías utilizadas
@@ -23,7 +24,9 @@
 # Introducción
 
 > Este proyecto se trata de la "orquestación" de distintos contenedores con Docker Swarm.
-> *Son simples servidores hechos con **JavaScript*** y **NodeJS**.
+> *Son simples servidores hechos con **JavaScript** y **NodeJS**, los cuales consultan a un contenedor que aloja una base de datos **MySQL***.
+> La aplicación en sí, que es servida no es importante. Lo único que hace es mostrar una lista alojada en una tabla de la base de datos. Adicionalmente se proporciona un formulario para añadir registros.
+> 
 > Cada servidor se ejecuta en un contenedor independiente.
 > Los contenedores que alojan los servidores se crean a partir de imágenes de **node:18-alpine**. Luego en estos contenedores hacemos las instalaciones correspondientes (a través de los Dockerfile's) para poder ejecutar servidores desarrollados con **NodeJS**.
 > El balanceo de los contenedores se realiza a partir de **Docker Swarm**.
@@ -39,10 +42,12 @@
 
 # Usos
 
+> **Aclaración**: En esta guía se supone que los pasos se ejecutan secuencialmente y no se consideran posibles errores que puedan surgir, tales como falta de conexión a internet, errores en el SO, etc. A su vez, en cada paso deben hacerse las respectivas verificaciones de la correcta ejecución y finalización de los procesos involucrados. Si en un paso ocurre un error o este no finaliza aún, no podrá realizarse correctamente el paso siguiente.
+> 
 > Para utilizar este proyecto,  abrimos un CLI y nos dirigimos al directorio del sistema donde deseamos guardarlo. Ejecutamos el siguiente comando
 
 ```bash
-git clone https://github.com/MARnVEL/saIII-DockerSwarm.git
+git clone https://github.com/MARnVEL/saIII-docker-swarm-2-services.git
 ```
 
 1. Iniciar la aplicación Docker Desktop
@@ -56,18 +61,30 @@ git clone https://github.com/MARnVEL/saIII-DockerSwarm.git
 3. En el directorio de nuestro sistema donde guardamos el proyecto, ejecutamos en el CLI
 
       ```bash
-      cd server/
+      cd node-in-apache/
       ```
 
       * Luego:
 
       ```bash
-      docker build -t my-image .
+      docker build -t nia-img .
       ```
 
-      * Con este comando construiremos la imagen que luego será utilizada en nuestro [[fichero .yml]](`./node-services.yml`) (línea 5).
+      * Con este comando construiremos la imagen que luego será utilizada en nuestro [fichero .yml](./docker-services.yml) (línea 13).
 
-4. Luego hacemos un `cd ..` para volver al directorio raíz de nuestro proyecto y ejecutamos.:
+4. Luego hacemos un `cd ..` para volver al directorio raíz de nuestro proyecto y ejecutamos:
+
+      ```bash
+      cd nodejs/
+      ```
+
+      * Luego:
+
+      ```bash
+      docker build -t node-img .
+      ```
+
+      * Con este comando construiremos la imagen que luego será utilizada en nuestro [fichero .yml](./docker-services.yml) (línea 22).
 
       ```bash
       docker stack deploy -c node-services.yml myNodeJS
@@ -124,7 +141,7 @@ git clone https://github.com/MARnVEL/saIII-DockerSwarm.git
       En la línea 7 cambiamos el valor dentro del `<h1>`: `res.send("<h1>Server 1</h1>");`.
       Si el servicio es el primero, tendrá el número 1; si el servicio es el segundo, tendrá el númer 2, y así sucesivamente.
 
-9. Para probar que efectivamente el balanceador está funcionando primero necesitamos conocer la dirección IP de nuestra máquina. En Windows 10: `ipconfig`
+9.  Para probar que efectivamente el balanceador está funcionando primero necesitamos conocer la dirección IP de nuestra máquina. En Windows 10: `ipconfig`
 
       * Luego ejecutamos repetidamente:
 

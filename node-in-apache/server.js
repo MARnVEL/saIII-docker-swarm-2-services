@@ -6,15 +6,15 @@ const port = 81;
 
 app.use(express.urlencoded({ extended: true }));
 
+const dbConfig = {
+  host: "mysql",
+  user: "root",
+  password: "pass",
+  database: "prueba",
+};
+
 // Función para esperar a que MySQL esté disponible
 async function waitForMysql() {
-  const dbConfig = {
-    host: "mysql",
-    user: "root",
-    password: "pass",
-    database: "prueba",
-  };
-
   while (true) {
     try {
       const connection = mysql.createConnection(dbConfig);
@@ -33,31 +33,19 @@ async function waitForMysql() {
       break;
     } catch (err) {
       console.log("Esperando a que MySQL esté disponible...");
-      await new Promise((resolve) => setTimeout(resolve, 1000)); // Espera 1 segundo
+      await new Promise((resolve) => setTimeout(resolve, 3000)); // Espera 3 segundos
     }
   }
 }
 
-// Espera a que MySQL esté disponible antes de iniciar el servidor
-waitForMysql()
-  .then(() => {
-    // Configuración de la base de datos MySQL
-    const db = mysql.createConnection({
-      host: "mysql",
-      user: "root",
-      password: "pass",
-      database: "prueba",
-    });
+const serverBootstrap = async () => {
+  try {
+    // Esperamos a que MySQL esté disponible antes de iniciar el servidor
+    await waitForMysql();
 
-    /* 
-    // Config conexión a base de datos
-    const db = mysql.createConnection({
-      host: "mysql",
-      user: "root",
-      password: "pass",
-      database: "prueba",
-    });
- */
+    // Configuración de la base de datos MySQL
+    const db = mysql.createConnection(dbConfig);
+
     // Conectar a la base de datos MySQL
     db.connect((err) => {
       if (err) {
@@ -68,7 +56,7 @@ waitForMysql()
     });
 
     // Ruta raíz que realiza una consulta SQL y responde con una tabla HTML
-    app.get("/", (req, res) => {
+    app.get("/", (_, res) => {
       // Realiza una consulta SQL para obtener datos de la tabla 'tu_tabla'
       const query = "SELECT * FROM alumnos";
 
@@ -124,7 +112,7 @@ waitForMysql()
         }
 
         console.log("Nuevo alumno agregado a la base de datos");
-
+        console.log(result);
         // Redirige de nuevo a la página principal después de agregar el alumno
         res.redirect("/");
       });
@@ -136,8 +124,10 @@ waitForMysql()
         `Servidor escuchando en el puerto ${port}. Ir a http://localhost:${port}`
       );
     });
-  })
-  .catch((err) => {
+  } catch (error) {
     console.error("No se pudo conectar a MySQL:", err);
     process.exit(1);
-  });
+  }
+};
+
+serverBootstrap();

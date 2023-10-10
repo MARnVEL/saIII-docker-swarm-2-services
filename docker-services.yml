@@ -2,67 +2,27 @@ version: '3'
 
 services:
   mysql:
-  #   # build:
-  #   #   context: ./database
-  #   #   dockerfile: Dockerfile
-  #   image: mysql-img
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: pass
-  #     MYSQL_DATABASE: prueba
-  #   ports:
-  #     - "3306:3306"
-  #   # Creo un volumen para no perder el los datos de la BD al eliminar el contenedor.
-  #   volumes:
-  #     - ./mysql-datos:/var/lib/mysql
-  #   # networks:
-  #   #   - swarm-net
-  #   # deploy:
-  #   #   replicas: 1
-
-    image: mysql:debian
+    image: mysql-img
     ports:
       - "3306:3306"
+    # Creo un volumen para no perder el los datos de la BD al eliminar el contenedor.
     volumes:
       - ./mysql-datos:/var/lib/mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: pass 
-      MYSQL_DATABASE: prueba
 
   apache:
-    # build:
-    #   context: ./node-in-apache
-    #   dockerfile: Dockerfile
     image: nia-img
     ports:
       - "8080:81"
     deploy:
       replicas: 3
-    # networks:
-    #   - swarm-net
     depends_on:
       - mysql
-    # Este fucking volume me está causando problemas.. Por eso lo comenté chaon
-    # volumes:
-    #   - ./apache-datos:/var/www/html
 
   nodejs:
-    # build:
-    #   context: ./nodejs
-    #   dockerfile: Dockerfile
     image: node-img
     ports:
       - "8090:3000"
     deploy:
       replicas: 3
-    # networks:
-    #   - swarm-net
     depends_on:
       - mysql
-    # volumes:
-    #   - ./node-datos:/usr/src/app
-
-# networks:
-#   swarm-net:
-  
-  
-
