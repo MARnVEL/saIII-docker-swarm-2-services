@@ -25,7 +25,9 @@
 
 > Este proyecto se trata de la "orquestación" de distintos contenedores con Docker Swarm.
 > *Son simples servidores hechos con **JavaScript** y **NodeJS**, los cuales consultan a un contenedor que aloja una base de datos **MySQL***.
-> La aplicación en sí, que es servida no es importante. Lo único que hace es mostrar una lista alojada en una tabla de la base de datos. Adicionalmente se proporciona un formulario para añadir registros.
+> La aplicación en sí no es importante. Lo único que hace es mostrar una lista alojada en una tabla de la base de datos. Adicionalmente se proporciona un formulario para añadir registros.
+> 
+> Lo que se intenta demostrar es la administración de distintos servidores ejecutándose en contenedores de *Docker*, y su orquestación con *Docker Swarm*.
 > 
 > Cada servidor se ejecuta en un contenedor independiente.
 > Los contenedores que alojan los servidores se crean a partir de imágenes de **node:18-alpine**. Luego en estos contenedores hacemos las instalaciones correspondientes (a través de los Dockerfile's) para poder ejecutar servidores desarrollados con **NodeJS**.
@@ -86,76 +88,61 @@ git clone https://github.com/MARnVEL/saIII-docker-swarm-2-services.git
 
       * Con este comando construiremos la imagen que luego será utilizada en nuestro [fichero .yml](./docker-services.yml) (línea 22).
 
+5. Luego hacemos un `cd ..` para volver al directorio raíz de nuestro proyecto y ejecutamos:
+
       ```bash
-      docker stack deploy -c node-services.yml myNodeJS
+      cd database/
       ```
 
-5. Podemos listar los servicios de **swarm**:
+      * Luego:
+
+      ```bash
+      docker build -t mysql-img .
+      ```
+
+      * Con este comando construiremos la imagen que luego será utilizada en nuestro [fichero .yml](./docker-services.yml) (línea 5).
+
+6. Luego hacemos un `cd ..` para volver al directorio raíz de nuestro proyecto y ejecutamos:
+
+      ```bash
+      docker stack deploy -c docker-services.yml ns
+      ```
+
+      * *Esperamos un momento a que inicien todos nuestros servicios*. En total ***se levantarán 7 servicios***, 3 para los servidores del contenedor *Apache*, 3 para los servidores del contenedor *NodeJs* y uno para el servicio de la base de datos del contenedor *MySQL*.
+      * También se creará un directorio `mysql-datos`, dentro de la carpeta del proyecto que guardará todos los datos que se carguen a la base de datos. Este es un volumen creado en el servicio de *mysql*.
+      * **¡Listo!**. Ya podríamos probar el correcto funcionamiento de los servicios.
+      * **Primero**: abrimos nuestro navegador de preferencia y nos dirigimos a: `http://localhos:8080`. Deberíamos ver una lista de 'alumnos' con su respectivos nombres, apellidos y dni's. También deberíamos tener la posibilidad de cargar alumnos a nuestra BD.
+      * **Segundo**: abrimos nuestro navegador de preferencia y nos dirigimos a: `http://localhos:8090`. El resultado debería ser el mismo que en el párrafo anterior.
+
+7. Podemos listar los servicios de **swarm**:
 
       ```bash
       docker service ls
       ```
 
-6. Ahora, debemos hacer unas pequeñas modificaciones de nuestros servidores dentro de los servicios desplegados para que podamos distinguir claramente el balanceo y/o funcionamiento de la herramiente "Docker swarm".
-
-7. Listamos los contenedores levantados y anotamos los CONTAINER IDs para los 3 servicios desplegados:
+8. Para eliminar los servicios ejecutamos:
 
       ```bash
-      docker ps
+      docker service rm ns_apache
       ```
-
-8. Para cada contenedor hacemos lo siguiente:
 
       ```bash
-      docker exec -it <idContenedor> sh
+      docker service rm ns_nodejs
       ```
-
-      * Hacemos una consulta `ls` para saber qué tenemos efectivamente dentro del contenedor.
-      * Una vez dentro del cotenedor hacemos:
 
       ```bash
-      apk update
+      docker service rm ns_mysql
       ```
 
-      * Verificamos que exista el editor de texto nano
+9. Escalamiento. Para poder aumentar la cantidad de servicios disponibles, abrimos un CLI y ejecutamos:
 
       ```bash
-      apk search nano
+      docker service scale ns_apache=9
       ```
-
-      * Si no existe, o en pasos posteriores no podemos usar `nano`, hacemos la instalación del editor nano para poder editar nuestro fichero `index.js`
 
       ```bash
-      apk add nano
+      docker service scale ns_nodejs=9
       ```
 
-      * Ahora editamos nuestro fichero `index.js`
-
-      ```bash
-      nano index.js
-      ```
-
-      * Para escribir, o guardar los cambios en nano hacemos: `Ctrl + O`. Luego Confirmamos con Enter.
-      * Para salir del editor: `Ctrl + X`
-
-      En la línea 7 cambiamos el valor dentro del `<h1>`: `res.send("<h1>Server 1</h1>");`.
-      Si el servicio es el primero, tendrá el número 1; si el servicio es el segundo, tendrá el númer 2, y así sucesivamente.
-
-9.  Para probar que efectivamente el balanceador está funcionando primero necesitamos conocer la dirección IP de nuestra máquina. En Windows 10: `ipconfig`
-
-      * Luego ejecutamos repetidamente:
-
-      ```bash
-      curl <ip>
-      ```
-
-      * Si el balanceador funciona correctamente deberíamos poder ver distintas respuestas.
-
-10. Escalamiento. Para poder aumentar la cantidad de servicios disponibles, abrimos un CLI y ejecutamos:
-
-      ```bash
-      docker service scale myNodeJS=5
-      ```
-
-      Con el comando anterior hemos aumentado la cantidad de nuestros servicios de nombre `myNodeJs` a `5`.
+      Con el comando anterior hemos aumentado la cantidad de nuestros servicios de nombre `ns_apache` y `ns_nodejs` a `9`.
       Debemos aclarar que este comando, elimina los contenedores que se están ejecutando y se levantan nuevamente en la cantidad asignada.
